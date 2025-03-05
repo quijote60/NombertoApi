@@ -10,10 +10,15 @@ const asyncHandler = require('express-async-handler');
 // @route GET /expenses
 // @access Private
 const getAllExpenses = asyncHandler(async (req, res) => {
-  const expenses = await Expense.find().lean();
+  const expenses = await Expense.find()
+  .populate('paymentCategory', 'paymentCategory description') // Populate paymentCategory
+  .populate('paymentType', 'paymentTypeId paymentType')
+    .lean(); // Convert to plain JavaScript object for better performance
+
   if (!expenses?.length) {
     return res.status(404).json({ message: 'No expenses found' });
   }
+
   res.status(200).json({ data: expenses });
 });
 
